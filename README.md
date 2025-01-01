@@ -1,6 +1,6 @@
 # Q8 LTX-Video optimized for Ada
 
-This repository shows how to use the Q8 kernels from [`KONAKONA666/q8_kernels`](https://github.com/KONAKONA666/q8_kernels) with `diffusers` to optimize inference of [LTX-Video](https://huggingface.co/Lightricks/LTX-Video) on ADA GPUs. Go from 16.192 secs to 9.572 while reducing memory from 7GBs to 5GBs without quality loss 🤪
+This repository shows how to use the Q8 kernels from [`KONAKONA666/q8_kernels`](https://github.com/KONAKONA666/q8_kernels) with `diffusers` to optimize inference of [LTX-Video](https://huggingface.co/Lightricks/LTX-Video) on ADA GPUs. Go from 16.192 secs to 9.572 secs while reducing memory from 7GBs to 5GBs without quality loss 🤪
 
 The Q8 transformer checkpoint is available here: [`sayakpaul/q8-ltx-video`](https://hf.co/sayakpaul/q8-ltx-video).
 
