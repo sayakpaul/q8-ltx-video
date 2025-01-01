@@ -14,12 +14,13 @@ from q8_attention_processors import LTXVideoQ8AttentionProcessor
 
 MODULES_TO_NOT_CONVERT = ["proj_in", "time_embed", "caption_projection", "proj_out"]
 
+
 def replace_linear(model, current_key_name=None, replaced=False):
     for name, child in model.named_children():
         if current_key_name is None:
             current_key_name = []
         current_key_name.append(name)
-        
+
         if isinstance(child, nn.Linear) and name not in MODULES_TO_NOT_CONVERT:
             # Check if the current key is not in the `modules_to_not_convert`
             current_key_name_str = ".".join(current_key_name)
@@ -27,10 +28,7 @@ def replace_linear(model, current_key_name=None, replaced=False):
                 (key + "." in current_key_name_str) or (key == current_key_name_str) for key in MODULES_TO_NOT_CONVERT
             ):
                 new_linear = Q8Linear(
-                    child.in_features,
-                    child.out_features,
-                    bias=child.bias is not None,
-                    device=child.weight.device
+                    child.in_features, child.out_features, bias=child.bias is not None, device=child.weight.device
                 )
                 setattr(model, name, new_linear)
                 replaced = True
@@ -38,7 +36,7 @@ def replace_linear(model, current_key_name=None, replaced=False):
             replace_linear(model=child, current_key_name=current_key_name, replaced=replaced)
 
         current_key_name.pop(-1)
-    
+
     return model, replaced
 
 
@@ -54,6 +52,7 @@ def get_parent_module_and_attr(root, dotted_name: str):
     for p in parent_parts:
         parent_module = getattr(parent_module, p)
     return parent_module, attr_name
+
 
 def replace_rms_norm(model):
     modules_to_replace = []
@@ -78,13 +77,13 @@ def replace_gelu(model, replaced=False):
     for name, child in model.named_children():
         if isinstance(child, GELU):
             new_gelu = QGELU(
-                dim_in=child.proj.in_features, 
-                dim_out=child.proj.out_features, 
-                approximate=child.approximate, 
-                bias=child.proj.bias is not None
+                dim_in=child.proj.in_features,
+                dim_out=child.proj.out_features,
+                approximate=child.approximate,
+                bias=child.proj.bias is not None,
             )
             setattr(model, name, new_gelu)
-            replaced = True 
+            replaced = True
         else:
             replace_gelu(model=child, replaced=replaced)
 
@@ -92,7 +91,6 @@ def replace_gelu(model, replaced=False):
 
 
 def set_attn_processors(model, processor):
-
     def fn_recursive_attn_processor(name, module: torch.nn.Module, processor):
         if hasattr(module, "set_processor"):
             module.set_processor(processor)
@@ -135,7 +133,7 @@ def check_transformer_replaced_correctly(model):
     for block in model.transformer_blocks:
         assert isinstance(block.ff.net[0], QGELU), f"{type(block.ff.net[0])=}"
         if getattr(block.ff.net[0], "proj", None) is not None:
-             assert block.ff.net[0].proj.weight.dtype == torch.int8, f"{block.ff.net[0].proj.weight.dtype=}."
+            assert block.ff.net[0].proj.weight.dtype == torch.int8, f"{block.ff.net[0].proj.weight.dtype=}."
 
     set_attn_processors(model, LTXVideoQ8AttentionProcessor())
     all_attn_processors = attn_processors(model)

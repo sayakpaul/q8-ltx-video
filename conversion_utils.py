@@ -4,12 +4,7 @@ https://github.com/KONAKONA666/q8_kernels/blob/9cee3f3d4ca5ec8ab463179be32c8001e
 """
 
 import torch
-from q8_ltx import (
-    replace_gelu, 
-    replace_linear, 
-    replace_rms_norm, 
-    MODULES_TO_NOT_CONVERT
-)
+from q8_ltx import replace_gelu, replace_linear, replace_rms_norm, MODULES_TO_NOT_CONVERT
 import argparse
 from diffusers import LTXVideoTransformer3DModel
 from q8_kernels.functional.quantizer import quantize
@@ -39,7 +34,7 @@ def convert_state_dict(orig_state_dict):
             scale_shift_keys.append(k)
 
     assert len(attn_keys + ffn_keys + scale_shift_keys) == len(transformer_block_keys), "error"
-    
+
     new_state_dict = {}
     for k in attn_keys:
         new_key = k
@@ -55,7 +50,7 @@ def convert_state_dict(orig_state_dict):
 
     for k in ffn_keys:
         new_key = k
-        
+
         if "bias" in k:
             new_state_dict[new_key] = orig_state_dict[k].float()
         elif "weight" in k:
@@ -69,8 +64,9 @@ def convert_state_dict(orig_state_dict):
 
     for k in non_transformer_block_keys:
         new_state_dict[k] = orig_state_dict[k]
-    
+
     return new_state_dict
+
 
 @torch.no_grad()
 def main(args):
@@ -101,7 +97,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--input_path", type=str, required=True)
     parser.add_argument("--output_path", type=str, required=True)
-    
+
     args = parser.parse_args()
-    
+
     main(args)

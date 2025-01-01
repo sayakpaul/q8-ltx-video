@@ -11,16 +11,17 @@ from diffusers.models.attention import Attention
 NON_MM_PRECISION_TYPE = torch.bfloat16
 MM_PRECISION_TYPE = torch.bfloat16
 
+
 class LTXVideoQ8AttentionProcessor:
     def __call__(
         self,
         attn: Attention,
         hidden_states: torch.Tensor,
-        encoder_hidden_states = None,
-        attention_mask = None,
-        image_rotary_emb = None,
+        encoder_hidden_states=None,
+        attention_mask=None,
+        image_rotary_emb=None,
     ) -> torch.Tensor:
-        if attention_mask is not None and  attention_mask.ndim > 1:
+        if attention_mask is not None and attention_mask.ndim > 1:
             attention_mask = attention_mask.argmin(-1).squeeze().int()
 
         if encoder_hidden_states is None:
@@ -42,11 +43,7 @@ class LTXVideoQ8AttentionProcessor:
         value = value.unflatten(2, (attn.heads, -1)).transpose(1, 2)
 
         hidden_states = Q8F.flash_attention.flash_attn_func(
-            query,
-            key,
-            value,
-            batch_mask=attention_mask,
-            apply_qk_hadamard=True
+            query, key, value, batch_mask=attention_mask, apply_qk_hadamard=True
         )
         hidden_states = hidden_states.transpose(1, 2).flatten(2, 3)
 

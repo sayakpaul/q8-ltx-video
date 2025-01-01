@@ -15,7 +15,7 @@ git clone https://github.com/huggingface/diffusers && cd diffusers && pip instal
 
 Then install `q8_kernels`, following instructions from [here](https://github.com/KONAKONA666/q8_kernels/?tab=readme-ov-file#installation).
 
-To run inference with the Q8 kernels, we need some minor changes in `diffusers`. Apply this patch to take those into account:
+To run inference with the Q8 kernels, we need some minor changes in `diffusers`. Apply [this patch](https://github.com/sayakpaul/q8-ltx-video/blob/368f549ca5136daf89049c9efe32748e73aca317/updates.patch) to take those into account:
 
 ```bash
 git apply updates.patch
@@ -55,7 +55,7 @@ During loading the model and using it for inference, we:
 * follow the same layer replacement scheme as detailed above
 * populate the converted state dict
 
-Refer [here]() more details. Additionally, we leverage the [flash-attention implementation]() from `q8_kernels` which provides further speedup.
+Refer [here](https://github.com/sayakpaul/q8-ltx-video/blob/368f549ca5136daf89049c9efe32748e73aca317/inference.py#L48) more details. Additionally, we leverage [flash-attention implementation](https://github.com/sayakpaul/q8-ltx-video/blob/368f549ca5136daf89049c9efe32748e73aca317/q8_attention_processors.py#L44) from `q8_kernels` which provides further speedup.
 
 </details>
 

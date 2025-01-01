@@ -4,6 +4,7 @@ import torch
 import json
 import argparse
 
+
 def benchmark_fn(f, *args, **kwargs):
     t0 = benchmark_pt.Timer(
         stmt="f(*args, **kwargs)",
@@ -14,28 +15,19 @@ def benchmark_fn(f, *args, **kwargs):
 
 
 def run_inference(pipe, prompt_embeds, **kwargs):
-    _ = pipe(
-        **prompt_embeds,
-        generator=torch.manual_seed(0),
-        output_type="latent",
-        **kwargs
-    )
+    _ = pipe(**prompt_embeds, generator=torch.manual_seed(0), output_type="latent", **kwargs)
+
 
 def run_benchmark(pipe, args, prompt_embeds):
     for _ in range(5):
         run_inference(pipe, prompt_embeds)
-    
+
     width, height = args.resolution.split("x")[::-1]
     time = benchmark_fn(
         run_inference, pipe, prompt_embeds, num_frames=args.num_frames, width=int(width), height=int(height)
     )
-    
-    info = dict(
-        num_frames=args.num_frames, 
-        width=int(width), 
-        height=int(height),
-        time=time
-    )
+
+    info = dict(num_frames=args.num_frames, width=int(width), height=int(height), time=time)
     path = f"{args.num_frames}x{height}x{width}"
     path += "_q8" if args.q8_transformer_path else ""
     path += ".json"
@@ -49,7 +41,7 @@ if __name__ == "__main__":
     parser.add_argument("--num_frames", type=int, default=81)
     parser.add_argument("--resolution", type=str, default="480x704")
     args = parser.parse_args()
-    
+
     if args.q8_transformer_path is None:
         pipe = LTXPipeline.from_pretrained(
             "Lightricks/LTX-Video", text_encoder=None, vae=None, torch_dtype=torch.bfloat16
@@ -57,10 +49,8 @@ if __name__ == "__main__":
     else:
         from inference import load_q8_transformer
         from q8_kernels.graph.graph import make_dynamic_graphed_callable
-        
-        pipe = LTXPipeline.from_pretrained(
-            "Lightricks/LTX-Video", text_encoder=None, transformer=None, vae=None
-        )
+
+        pipe = LTXPipeline.from_pretrained("Lightricks/LTX-Video", text_encoder=None, transformer=None, vae=None)
         transformer = load_q8_transformer(args)
         pipe.transformer = transformer
 
