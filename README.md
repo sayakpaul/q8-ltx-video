@@ -67,7 +67,7 @@ Below numbers were obtained for `max_sequence_length=128`, `num_inference_steps=
 |  | **Time (Secs)** | **Memory (MB)** |
 |:-----------:|:-----------:|:-----------:|
 | Non Q8  | 16.192 | 7172.86  |
-| Q8  | 9.572 secs  | 5413.51  |
+| Q8  | 9.572  | 5413.51  |
 
 Benchmarking script is available in [`benchmark.py`](./benchmark.py).
 
