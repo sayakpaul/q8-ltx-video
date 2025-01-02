@@ -60,7 +60,7 @@ def load_q8_transformer(args):
         state_dict = safetensors.torch.load_file(f"{args.q8_transformer_path}/diffusion_pytorch_model.safetensors")
     else:
         state_dict = safetensors.torch.load_file(
-            hf_hub_download(args.q8_transformer_path), filename="diffusion_pytorch_model.safetensors"
+            hf_hub_download(args.q8_transformer_path, "diffusion_pytorch_model.safetensors")
         )
     transformer.load_state_dict(state_dict, strict=True, assign=True)
     check_transformer_replaced_correctly(transformer)

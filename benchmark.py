@@ -30,6 +30,7 @@ def run_benchmark(pipe, args, prompt_embeds):
     info = dict(num_frames=args.num_frames, width=int(width), height=int(height), time=time)
     path = f"{args.num_frames}x{height}x{width}"
     path += "_q8" if args.q8_transformer_path else ""
+    path += "_compile" if args.compile else ""
     path += ".json"
     with open(path, "w") as f:
         json.dump(info, f)
@@ -38,6 +39,7 @@ def run_benchmark(pipe, args, prompt_embeds):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--q8_transformer_path", type=str, default=None)
+    parser.add_argument("--compile", action="store_true")
     parser.add_argument("--num_frames", type=int, default=81)
     parser.add_argument("--resolution", type=str, default="480x704")
     args = parser.parse_args()
@@ -64,8 +66,12 @@ if __name__ == "__main__":
 
         pipe.transformer.forward = make_dynamic_graphed_callable(pipe.transformer.forward)
         pipe = pipe.to("cuda")
+        if args.compile:
+            pipe.transformer.compile()
 
     pipe.set_progress_bar_config(disable=True)
 
+    # Download it from here:
+    # https://huggingface.co/sayakpaul/q8-ltx-video/blob/main/prompt_embeds.pt
     prompt_embeds = torch.load("prompt_embeds.pt", map_location="cuda", weights_only=True)
     run_benchmark(pipe, args, prompt_embeds)

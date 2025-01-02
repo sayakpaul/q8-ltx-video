@@ -1,6 +1,6 @@
 # Q8 LTX-Video optimized for Ada
 
-This repository shows how to use the Q8 kernels from [`KONAKONA666/q8_kernels`](https://github.com/KONAKONA666/q8_kernels) with `diffusers` to optimize inference of [LTX-Video](https://huggingface.co/Lightricks/LTX-Video) on ADA GPUs. Go from 16.192 secs to 9.572 secs while reducing memory from 7GBs to 5GBs without quality loss 🤪
+This repository shows how to use the Q8 kernels from [`KONAKONA666/q8_kernels`](https://github.com/KONAKONA666/q8_kernels) with `diffusers` to optimize inference of [LTX-Video](https://huggingface.co/Lightricks/LTX-Video) on ADA GPUs. Go from 16.192 secs to 9.572 secs while reducing memory from 7GBs to 5GBs without quality loss 🤪 With `torch.compile()`, the time reduces further to 6.747 secs 🔥
 
 The Q8 transformer checkpoint is available here: [`sayakpaul/q8-ltx-video`](https://hf.co/sayakpaul/q8-ltx-video).
 
@@ -61,15 +61,18 @@ Refer [here](https://github.com/sayakpaul/q8-ltx-video/blob/368f549ca5136daf8904
 
 ## Performance
 
-Below numbers were obtained for `max_sequence_length=128`, `num_inference_steps=50`, `num_frames=81`, `resolution=480x704`.
+Below numbers were obtained for `max_sequence_length=512`, `num_inference_steps=50`, `num_frames=81`, `resolution=480x704`. Rest of the arguments were fixed at their default values as noticed in the [pipeline call signature of LTX-Video](https://github.com/huggingface/diffusers/blob/4b9f1c7d8c2e476eed38af3144b79105a5efcd93/src/diffusers/pipelines/ltx/pipeline_ltx.py#L496). The numbers also don't include the VAE decoding time to solely focus on the transformer.
 
 
 |  | **Time (Secs)** | **Memory (MB)** |
 |:-----------:|:-----------:|:-----------:|
 | Non Q8  | 16.192 | 7172.86  |
+| Non Q8 (+ compile)  | 16.205 | -  |
 | Q8  | 9.572  | 5413.51  |
+| Q8 (+ compile)  | 6.747  | -  |
 
-Benchmarking script is available in [`benchmark.py`](./benchmark.py).
+Benchmarking script is available in [`benchmark.py`](./benchmark.py). You would need to download the precomputed
+prompt embeddings from [here](https://huggingface.co/sayakpaul/q8-ltx-video/blob/main/prompt_embeds.pt) before running the benchmark.
 
 <details>
 <summary>Env</summary>
