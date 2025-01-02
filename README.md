@@ -115,7 +115,7 @@ NVIDIA GeForce RTX 4090, 24564 MiB
 </details>
 
 > [!NOTE]
-> The RoPE implementation [isn't usable as of 1st Jan 2025](https://github.com/KONAKONA666/q8_kernels/blob/9cee3f3d4ca5ec8ab463179be32c8001e31f8f33/q8_kernels/functional/rope.py#L26). So, we resort to using [the one](https://github.com/huggingface/diffusers/blob/91008aabc4b8dbd96a356ab6f457f3bd84b10e8b/src/diffusers/models/transformers/transformer_ltx.py#L464) from `diffusers`.
+> The RoPE implementation from `q8_kernels` [isn't usable as of 1st Jan 2025](https://github.com/KONAKONA666/q8_kernels/blob/9cee3f3d4ca5ec8ab463179be32c8001e31f8f33/q8_kernels/functional/rope.py#L26). So, we resort to using [the one](https://github.com/huggingface/diffusers/blob/91008aabc4b8dbd96a356ab6f457f3bd84b10e8b/src/diffusers/models/transformers/transformer_ltx.py#L464) from `diffusers`.
 
 
 ## Comparison
