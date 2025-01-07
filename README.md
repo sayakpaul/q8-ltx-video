@@ -54,6 +54,7 @@ During loading the model and using it for inference, we:
 * initialize the transformer model under a "meta" device
 * follow the same layer replacement scheme as detailed above
 * populate the converted state dict
+* replace the attention processors to use [the flash attention implementation](https://github.com/KONAKONA666/q8_kernels/blob/9cee3f3d4ca5ec8ab463179be32c8001e31f8f33/q8_kernels/functional/flash_attention.py) one from `q8_kernels`
 
 Refer [here](https://github.com/sayakpaul/q8-ltx-video/blob/368f549ca5136daf89049c9efe32748e73aca317/inference.py#L48) more details. Additionally, we leverage [flash-attention implementation](https://github.com/sayakpaul/q8-ltx-video/blob/368f549ca5136daf89049c9efe32748e73aca317/q8_attention_processors.py#L44) from `q8_kernels` which provides further speedup.
 
